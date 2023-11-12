@@ -6,6 +6,13 @@ import Test from './components/Test';
 import Books from './components/Books';
 import { ChakraProvider } from '@chakra-ui/react';
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react';
+import Home from './pages/Home';
+import { Route, Routes, useNavigate } from 'react-router-dom';
+import About from './pages/About';
+import Post from './pages/Post';
+import Details from './pages/Details';
+import Login from './pages/Login';
+import { googleLogout } from '@react-oauth/google';
 
 export const UserContext = createContext();
 
@@ -13,6 +20,8 @@ function App() {
   const [count, setCount] = useState(0);
   const [name, setName] = useState('TEST');
   // console.log(name);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.log('component muncul');
@@ -23,57 +32,36 @@ function App() {
     };
   }, [count]);
 
-  const user = { name: 'john' };
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // const user = { name: 'john' };
 
   return (
     <ChakraProvider>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card text-test">
-        <button onClick={() => setCount(count + 1)}>count is {count}</button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className={`${count > 2 ? 'text-red-600' : 'text-white'}`}>
-        Click on the Vite and React logos to learn more
-      </p>
-      <input
-        type="text"
-        value={name}
-        onChange={(e) => {
-          setName(e.target.value);
+      <button
+        onClick={() => {
+          localStorage.setItem('login', true);
+          setIsAuthenticated(true);
         }}
-      />
-      <UserContext.Provider value={user}>
-        <Test nama={name} />
-      </UserContext.Provider>
-      <Tabs>
-        <TabList>
-          <Tab>One</Tab>
-          <Tab>Two</Tab>
-          <Tab>Three</Tab>
-        </TabList>
-
-        <TabPanels>
-          <TabPanel>
-            <p>one!</p>
-          </TabPanel>
-          <TabPanel>
-            <p>two!</p>
-          </TabPanel>
-          <TabPanel>
-            <p>three!</p>
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
+      >
+        Login
+      </button>
+      <button
+        onClick={() => {
+          localStorage.setItem('login', false);
+          setIsAuthenticated(false);
+          googleLogout();
+        }}
+      >
+        Logout
+      </button>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route exact path="/post" element={<Post />} />
+        <Route exact path="/post/:id" element={<Details />} />
+        <Route exact path="/login" element={<Login />} />
+      </Routes>
     </ChakraProvider>
   );
 }
